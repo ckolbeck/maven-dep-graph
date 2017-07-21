@@ -147,7 +147,14 @@ patterns = ARGV.map { |p| DepPattern.new(p) }
 call_patterns = patterns.flat_map { |p| p.to_mvn_patterns }.join(",")
 excludes = options[:excluded_scopes].map {|s| "::::#{s}"}.join(',')
 
-mvn_result = system("mvn", "dependency:tree", "-DoutputType=dot", "-Dverbose=#{options[:mvn_verbose]}",
+# -Dverbose was removed in the 3.x plugin, need to use 2.10
+dep_plugin_version = '3.0.1'
+if options[:mvn_verbose]
+  dep_plugin_version = '2.10'
+end
+
+mvn_result = system("mvn", "org.apache.maven.plugins:maven-dependency-plugin:#{dep_plugin_version}:tree",
+                    "-DoutputType=dot", "-Dverbose=#{options[:mvn_verbose]}",  
                     "-DoutputFile=#{mvn_out}", "-DappendOutput=true",
                     "-Dincludes=#{call_patterns}", "-Dexcludes=#{excludes}",
                     :err => options[:debug_out], :out => options[:debug_out])
@@ -167,7 +174,10 @@ edges = Set.new
 root_re = /digraph "([^:]+):([^:]+):([^:]+):([^:]+)(:[^:]+)?"/
 edge_re = /"([^:]+):([^:]+):([^:]+):([^:]+)(:[^:]+)?"\s+->\s+"([^:]+):([^:]+):([^:]+):([^:]+)(:[^:]+)?"/
 
+options[:debug_out].write("Raw maven output:\n")
 File.readlines(mvn_out).each do |line|
+  options[:debug_out].write(line)
+  
   if (m = root_re.match line)
     c = m.captures
     roots << Dep.new(c[0], c[1], c[3])

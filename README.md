@@ -39,6 +39,7 @@ full list. Default: `compile,runtime`
 
     -v
     --[no-]verbose
+**Currently Broken** due to a maven dependency plugin bug.
 Controls whether mvn dependency:tree is invoked with the `verbose` flag. Default: false.
 
     -d
