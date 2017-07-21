@@ -10,6 +10,14 @@ This should be split into multiple files but I'm lazy.
 I'm bad at dynamic languages and this is the first thing longer
 than 5 lines I've written in ruby. It's pretty bad.
 
+Requirements
+------------
+
+* Ruby 2.x
+* Maven 3.x
+* GraphViz 2.x
+* Unflatten (Usually packaged with GraphViz)
+
 Invocation
 ----------
 
